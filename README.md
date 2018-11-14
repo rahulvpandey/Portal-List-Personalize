@@ -25,5 +25,34 @@ $rootScope, spModal, $window
        
         })      
     }
-    ```
-    
+ ``` 
+ 
+**Add below code to your Data Widget's Server Side code** 
+```
+function CheckPreference(table, view){
+	var userPref = new GlideRecord('sys_user_preference');
+		userPref.addQuery('name', table+'_'+view+'_list.view');
+		userPref.addQuery('user', gs.getUserID());
+		userPref.query();
+		if (userPref.next()) {
+return userPref.value;
+		}
+}
+```
+
+```
+data.fields_array = data.fields.split(',');
+```
+changes to below
+```
+data.fields_array = CheckPreference(data.table, data.view).split(',') || data.fields.split(',');
+```
+
+**Add below code to your Data Widget's Server Side code** 
+
+```
+var personalizeObj = {};
+	personalizeObj.table = data.table;
+	personalizeObj.view = data.view;
+	data.personalizeParms = personalizeObj;
+```
