@@ -43,7 +43,7 @@ return userPref.value;
 ```
 data.fields_array = data.fields.split(',');
 ```
-changes to below
+**changes to below**
 ```
 data.fields_array = CheckPreference(data.table, data.view).split(',') || data.fields.split(',');
 ```
@@ -56,3 +56,4 @@ var personalizeObj = {};
 	personalizeObj.view = data.view;
 	data.personalizeParms = personalizeObj;
 ```
+** Import Attached UI script and Widget ** 
