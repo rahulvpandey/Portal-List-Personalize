@@ -56,4 +56,4 @@ var personalizeObj = {};
 	personalizeObj.view = data.view;
 	data.personalizeParms = personalizeObj;
 ```
-** Import Attached UI script and Widget ** 
+**Import Attached UI script and Widget** 
