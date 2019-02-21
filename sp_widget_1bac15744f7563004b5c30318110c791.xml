@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<unload unload_date="2019-02-21 21:41:25">
+<sp_widget action="INSERT_OR_UPDATE">
+<category>custom</category>
+<client_script><![CDATA[function($scope, $rootScope) {
+  var c = this;
+	$scope.globalSelected = '';
+	$('#moveUp').click(function(){
+        var $op = $('#selected option:selected'),
+            $this = $(this);
+        if($op.length){
+$op.first().prev().before($op);
+        }
+		$scope.globalSelected = getSelectedValues();
+    });
+	$('#moveDown').click(function(){
+        var $op = $('#selected option:selected'),
+            $this = $(this);
+        if($op.length){
+					$op.last().next().after($op);
+        }
+		$scope.globalSelected = getSelectedValues();
+    });
+	$scope.additem = function(){
+var sel = document.getElementById("available");
+		if(sel.options[sel.selectedIndex].value){
+	var x = document.getElementById("selected");
+	var option = document.createElement("option");
+			option.value = sel.options[sel.selectedIndex].value;
+			option.text = sel.options[sel.selectedIndex].text;
+			x.add(option);
+			sel.remove(sel.selectedIndex);
+			$scope.globalSelected = getSelectedValues();
+	}
+	}
+	$scope.removeItem = function(){
+var sel = document.getElementById("selected");
+		if(sel.options[sel.selectedIndex].value){
+		var x = document.getElementById("available");
+	var option = document.createElement("option");
+			option.value = sel.options[sel.selectedIndex].value;
+			option.text = sel.options[sel.selectedIndex].text;
+			x.add(option);
+			sel.remove(sel.selectedIndex);
+			$scope.globalSelected = getSelectedValues();
+	}
+	
+	}
+	function getSelectedValues(){
+		var selectedArray = [];
+		var sel = document.getElementById("selected").options;
+		for(var i=0; i<sel.length; i++){
+			selectedArray.push(sel[i].value);
+		}
+		var selectedArrayString = selectedArray.join(",");
+		return selectedArrayString;
+	}
+		$rootScope.$on('saveChosen', function(event,data) { 
+$scope.data.updateColumns = true;
+		$scope.data.columnstobeUpdated = $scope.globalSelected;
+	$scope.server.update().then(function(){
+		$rootScope.$emit('personalizationDone');
+	});
+		});
+}
+]]></client_script>
+<controller_as>c</controller_as>
+<css>.arrowStyle{
+ margin-top: 8%;
+    font-size: 20px;
+
+}
+.makeClickable{
+  cursor: pointer;
+}
+.alignHeader{
+  display: block;
+    text-align: center;
+}
+</css>
+<data_table>sp_instance</data_table>
+<demo_data/>
+<description/>
+<docs display_value=""/>
+<field_list/>
+<has_preview>true</has_preview>
+<id>personalize_list</id>
+<internal>false</internal>
+<link/>
+<name>Personalize List</name>
+<option_schema/>
+<public>false</public>
+<roles/>
+<script><![CDATA[(function() {
+  data.table = input.table;
+	data.view = input.view || 'default';
+	data.selected = CheckPreference(data.table, data.view).split(',');
+	var selectedstring =CheckPreference(data.table, data.view).split(',');
+	var columnArray =  [];
+	var selectedArray = [];
+	data.fields = $sp.getListColumns(data.table, data.view);
+		data.fields_array = data.fields.split(',');
+	var grForLabels = new GlideRecord(data.table);
+		data.debugResults = [];
+	for (var i in data.fields_array) {
+		if(selectedstring.indexOf(data.fields_array[i]) > -1){
+				var field = data.fields_array[i];
+		var ge = grForLabels.getElement(field);
+		if (ge == null)
+			continue;
+		var dataobj = {};
+		dataobj.value = field.toString();
+		dataobj.text = ge.getLabel().toString();
+			//selectedArray.splice(electedstring.indexOf(data.fields_array[i]), 0, dataobj);
+			selectedArray.push(dataobj);
+		}
+		else{
+		var field1 = data.fields_array[i];
+		var ge1 = grForLabels.getElement(field1);
+		if (ge1 == null)
+			continue;
+		var dataobj1 = {};
+		dataobj1.value = field1.toString();
+		dataobj1.text = ge1.getLabel().toString();
+		columnArray.push(dataobj1);
+		}
+	}
+	
+var orderSelectedArray = [];
+	for(var selectedSave = 0; selectedSave < selectedstring.length; selectedSave++){
+	for(var selArr = 0; selArr < selectedArray.length; selArr++){
+		var selItr=selectedstring[selectedSave];
+		if(selectedArray[selArr].value == selItr){
+		var orderObj = {};
+			orderSelectedArray.push(selectedArray[selArr]);
+	}
+	}
+	}
+data.selectedColumns = orderSelectedArray;
+	data.columnDetails = columnArray;
+if(input.updateColumns){
+	updatePreference(data.table, data.view, input.columnstobeUpdated);
+}
+})();
+function CheckPreference(table, view){
+	var userPref = new GlideRecord('sys_user_preference');
+		userPref.addQuery('name', table+'_'+view+'_list.view');
+		userPref.addQuery('user', gs.getUserID());
+		userPref.query();
+		if (userPref.next()) {
+return userPref.value;
+		}
+}
+function updatePreference(table, view, columns){
+    var uprefApproval = new GlideRecord('sys_user_preference');
+		uprefApproval.addQuery('name', table+'_'+view+'_list.view');
+		uprefApproval.addQuery('user', gs.getUserID());
+		uprefApproval.query();
+		if (uprefApproval.next()) {
+		  uprefApproval.value = columns.toString();
+			uprefApproval.update();
+		} else {
+			uprefApproval.initialize();
+			uprefApproval.name = table+'_'+view+'_list.view';
+			uprefApproval.user = gs.getUserID().toString();
+			uprefApproval.value = columns;
+			uprefApproval.insert();
+		}
+}]]></script>
+<servicenow>false</servicenow>
+<sys_class_name>sp_widget</sys_class_name>
+<sys_created_by>admin</sys_created_by>
+<sys_created_on>2018-11-13 09:06:23</sys_created_on>
+<sys_id>1bac15744f7563004b5c30318110c791</sys_id>
+<sys_mod_count>161</sys_mod_count>
+<sys_name>Personalize List</sys_name>
+<sys_package display_value="Global" source="global">global</sys_package>
+<sys_policy/>
+<sys_scope display_value="Global">global</sys_scope>
+<sys_update_name>sp_widget_1bac15744f7563004b5c30318110c791</sys_update_name>
+<sys_updated_by>admin</sys_updated_by>
+<sys_updated_on>2019-02-21 21:41:14</sys_updated_on>
+<template><![CDATA[
+<div>
+  <div class="row">
+    <div class="col-xs-5">
+      <label for="available" class="alignHeader">Available</label>
+      <select multiple class="form-control" id="available">
+        <option ng-repeat="options in data.columnDetails" value="{{options.value}}">{{options.text}}</option>
+      </select>
+    </div>
+    <div class="col-xs-1 arrowStyle">
+      <span class="glyphicon glyphicon-arrow-right makeClickable" ng-click="additem()"></span>
+      <span class="glyphicon glyphicon-arrow-left makeClickable" ng-click="removeItem()"></span>
+    </div>
+   <div class="col-xs-5">
+      <label for="selected" class="alignHeader">Selected</label>
+      <select multiple class="form-control" id="selected">
+        <option ng-repeat="options in data.selectedColumns" value="{{options.value}}">{{options.text}}</option>
+      </select>
+    </div>
+     <div class="col-xs-1 arrowStyle">
+      <span id="moveUp" class="glyphicon glyphicon-arrow-up makeClickable"></span>
+      <span id="moveDown" class="glyphicon glyphicon-arrow-down makeClickable"></span>
+    </div>
+</div>]]></template>
+</sp_widget>
+</unload>
