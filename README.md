@@ -4,7 +4,7 @@
 - Fixed multiple removal bug
 # Portal-List-Personalize
 Widget to add personalize feature(gear icon) on servicenow Portal list view
-![alt text](https://preview.ibb.co/chpcPf/personalize.png)
+![alt text](https://i.imgur.com/cihVl4D.png)
 # Installation
 **Add below html code to your Data Widget's html**
 ```
