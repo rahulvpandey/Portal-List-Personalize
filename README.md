@@ -1,3 +1,7 @@
+#Update :
+- Removed Multiselect.js dependencies
+- Added reordering of columns
+- Fixed multiple removal bug
 # Portal-List-Personalize
 Widget to add personalize feature(gear icon) on servicenow Portal list view
 ![alt text](https://preview.ibb.co/chpcPf/personalize.png)
